@@ -26,6 +26,13 @@ trainISDRSSamples = trainISDRS[:800]
 trainLabelsSamples = train_label[:800]
 testISDRSSamples = testISDRS
 testLabelsSamples = test_label
+#%%
+####################
+# Model Parameters #
+####################
+###########################
+# Representation Learning #
+###########################
 
 nc_ = 512 * 4
 na_ = trainISDRSSamples.shape[1] 
@@ -48,6 +55,10 @@ nEpoch_ = 30
 sp01 = sp.spatialPooler(trainISDRSSamples, batchSize_, nEpoch_, na_, nc_, nps_, permInc_, permDec_, proxSynThres_, windPermInitial_, proxDendriThres_, desirColAct_, maximumBoost_, dutyCyclePeriod_)
 sp01.poolerSolve(nEpoch_)
 #%%
+#######################
+# Logestic regression #
+#######################
+
 from sklearn.linear_model import LogisticRegression 
 from sklearn.metrics import accuracy_score
 train_osdrs = sp01.getOSDRS(trainISDRSSamples, numWinners_= 204)
