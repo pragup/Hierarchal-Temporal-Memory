@@ -27,9 +27,9 @@ class spatialPooler:
         self.desirColAct = desirColAct_ # desired column activity level 0 < desirColAct_ < nc_ 
         self.minActScalFact = minActLevel_ # minimum activity level scaling factor
         self.permBoostScalFact = permBoostScalFact_ # permanence boosting scaling factor 
-        self.maximumBoost = maximumBoost_
-        self.dutyCyclePeriod = dutyCyclePeriod_
-        self.inhibitRad = 1
+        self.maximumBoost = maximumBoost_ # maximum boost limit 
+        self.dutyCyclePeriod = dutyCyclePeriod_ # duty cycle period for boosting
+        self.inhibitRad = 1 # inhibition radius
         
         #Initialize Arrays
         self.delta = None # increment and decrement in synapsis
@@ -42,9 +42,6 @@ class spatialPooler:
         self.notX = None # per batch active synapses of input for a given columns
         
         self.gamma = None # for inhibition
-        
-        # self.genX() # active synapses of input for a given columns
-        # self.notX = (self.X <= 0).astype(int)
         
         self.distColumnToSyn = np.zeros(self.C.shape)
         self.genDistColumnToSyn()
@@ -89,6 +86,8 @@ class spatialPooler:
     
     def genX(self, batchIndex):
         
+        # active synapses of input for a given columns
+        
         inputData_ = self.inputSDRs[batchIndex*self.batchSize:(batchIndex + 1)*self.batchSize, :]
         notInputData_ = (inputData_<=0).astype(int)
         self.X = np.zeros((inputData_.shape[0] * self.nc, self.na))
@@ -106,12 +105,10 @@ class spatialPooler:
         
         for i_ in range(self.na):
             list1_.append(np.where(self.C[:, i_] == 1)[0][0])
-        
         list1_ = np.array(list1_)
         
         distM_ = np.zeros(self.C.shape)
         for i_ in range(self.nc):
-        
             dlist1_ = list1_ - i_
             dist_ = 2 * (dlist1_!=0).astype(int)
             distM_[i_, :] = dist_
@@ -127,7 +124,6 @@ class spatialPooler:
         
         if not globalInhibition:
             H = np.zeros((self.nc, self.nc))
-            
             for i_ in range(self.nc):
                 rowIndexList_ = np.argsort(H_[i_, :])[self.nc - 1 - self.inhibitRad : self.nc - 1]
                 H[i_, rowIndexList_] = 1
@@ -216,7 +212,7 @@ class spatialPooler:
     def getOSDRS(self, data_, numWinners_= 10):
         
         osdrsData_ = np.zeros((data_.shape[0], self.Y.shape[0]))
-        print(osdrsData_.shape)
+        #print(osdrsData_.shape)
         dataOSDRSIndices_ = np.argpartition(np.dot(-data_, self.Y.T), numWinners_, axis = 1)[:, :numWinners_]        # osdrsData_[dataOSDRSIndices_] = 1
         
         for i_ in range(len(data_)):

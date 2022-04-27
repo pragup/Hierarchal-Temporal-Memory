@@ -20,24 +20,15 @@ trainISDRS = (train_data.reshape(train_data.shape[0], train_data.shape[1] * trai
 testISDRS = (test_data.reshape(test_data.shape[0], test_data.shape[1] * test_data.shape[2])>=pixelThr_).astype(int)
 
 #%%
-# density_ = 0.3
-# np.random.seed(0)
-# n_examples = 20
-# width = 100
-# inputSDRs_ = np.random.choice([1, 0], n_examples * width, p =[density_, 1 - density_]).reshape(n_examples, width)
-# n_examples = 2
-# testExamples = np.random.choice([1, 0], n_examples * width, p =[density_, 1 - density_]).reshape(n_examples, width)
-#%%
 # Sampled data #
 np.random.seed(0)
-
-trainISDRSSamples = trainISDRS[:6000]
-trainLabelsSamples = train_label[:6000]
+trainISDRSSamples = trainISDRS[:800]
+trainLabelsSamples = train_label[:800]
 testISDRSSamples = testISDRS
 testLabelsSamples = test_label
 
 nc_ = 512 * 4
-na_ = trainISDRSSamples.shape[1] #trainISDRS.shape[1]
+na_ = trainISDRSSamples.shape[1] 
 nps_ = 40
 proxDendriThres_ = 10
 proxSynThres_ = 0.5
@@ -48,7 +39,8 @@ permDec_ = 0.05
 maximumBoost_ = 10
 dutyCyclePeriod_ = 100
 # inhibitRadius_ = 2
-batch_ratio = 0.01
+
+batch_ratio = 0.1
 batchSize_ = int(batch_ratio * len(trainISDRSSamples))
 testWinnersRatio_ = 0.10 
 numWinners_ = testWinnersRatio_ * nc_
@@ -70,4 +62,3 @@ acc = accuracy_score(testLabelsSamples, pred_labels)
 #%%
 import cProfile
 cProfile.run('sp01.poolerSolve(nEpoch_)')
-# print(np.count_nonzero((sp01.phi[0, :]>0)))
